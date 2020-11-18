@@ -14,6 +14,7 @@ const Consultation = require('./models/Consultation.js')
 /* ================ FOR THE FIVE PAGES ================= */
 router.get('/', function(req, res){
     //root route is for the login page
+    res.redirect("login")
 })
 
 router.post('/find-user', function(req, res){
