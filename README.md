@@ -1,0 +1,2 @@
+# MAC-App
+Medical Appointment &amp; Consultation Application. Web application for assisting health care physicians and patients in tracking their appointments and post consultation summaries. Patients should make appointments and view past consultation summaries and Health Care Physicians (Doctors) should be able to view their appointments and provide their consultation summary for those patients.
