@@ -1,39 +1,23 @@
+
 const mongoose = require('mongoose')
 
+//------------Appointment Schema ---------------
+const appointmentSchema = new mongoose.Schema({
 
-const AppointmentSchema = mongoose.Schema({
-    patientCode:{ // to be referenced
-        type:String,
-        unique:true,
-        required: true
-    },
-    PatientName:{
-        type:String,
-        unique:true,
-        required:true
-    },
-    Date:{
-        type:String,
-        required:true
-    },
-    Room:{
-        type:String,
-        required:true
-    },
-    DoctorsID:{    // to be referenced
-        type:String,
-        required:true
-    },
-    DoctorsName:{
-        type:String,
-        required:true
-    },
-    Reasons:{
-        type:String,
-        required:true
-    }
+    date: {type: Date, default: new Date(), required: true},
+    room: {type: String, required: true},
+    reasons: {type: String, required: true},
+
+    //Reference patient name from Patient model
+    patientName: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true},
+
+    //Reference doctor name doctor model
+    doctorName: {type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' , required: true},
+
 })
 
-const AppointmentModel = mongoose.model('appointment',AppointmentSchema)
+//Appointment model
+const Appointment = mongoose.model('Appointment', appointmentSchema)
 
-module.exports = AppointmentModel
+//Export appointment model
+module.exports = Appointment
