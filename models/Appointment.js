@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+
 const AppointmentSchema = mongoose.Schema({
     patientCode:{ // to be referenced
         type:String,

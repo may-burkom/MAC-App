@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
+const jwt = require("jsonwebtoken") // package to be installed
+const bodyParser = require("body-parser")// packages to be installed
+const cookieParser = require("cookie-parser") //package to be installed
+
 const Appointment = require('./models/Appointment.js')
 const Patient = require('./models/Patient.js')
 const Doctor = require('./models/Doctor.js')
@@ -10,30 +14,120 @@ const Consultation = require('./models/Consultation.js')
 //////////////////// ROUTES //////////////////////////////
 
 /* ================ FOR THE FIVE PAGES ================= */
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser());
+
+
 router.get('/', function(req, res){
-    //root route is for the login page
-    res.redirect("login")
+    //root route is for the main home
+    res.redirect("/main-home")
 })
-
-router.post('/find-user', function(req, res){
-    // route is for when login for is submitted to search for user and redirect to appropriate page
-    // either patient home, doctor home or admin home
+//--------------------------------------------------------------------------------------Users Login Route-----------------
+router.post("/login-doctor", async (req, res) => {
+    const username = req.body.username
+    const password = req.body.password
+    try {
+        const doctor = await Doctor.findOne({ username }).exec()
+        console.log(doctor)
+        if (!doctor) {
+            res.redirect("/")              //Check username
+        }
+        doctor.comparePassword(password, (error, match) => {
+            if (!match) {
+                res.redirect("/")
+            }
+        })
+        // if valid credentials assigning user a token and send it to the user
+        jwt.sign({ user: doctor }, "secretkey", (err, token) => {
+            res.cookie("token", token, { expires: new Date(Date.now() + 900000), httpOnly: true }) // send the token as cookies to client
+            res.redirect("/doctor-home") //reriect to the admin-home page
+        })
+        res.redirect("/doctor-home") //send homepage if valid username and password
+    } catch (error) {
+        console.log(error)
+    }
 })
-
-router.get('/admin-signup', function(req,res){
-
+//............................................................................
+router.post("/login-patient", async (req, res) => {
+    const username = req.body.username
+    const password = req.body.password
+    try {
+        const patient = await Patient.findOne({ username }).exec()
+        if (!patient) {
+            console.log("no patient")
+            res.redirect("/")              //Check usernam
+        }
+        patient.comparePassword(password, (error, match) => {
+            if (!match) {               //check password
+                console.log("password not matched")
+                res.redirect("/")
+            }
+        })
+        // if valid credentials assigning user a token and send it to the user
+        jwt.sign({ user: admin }, "secretkey", (err, token) => { // sign the token 
+            res.cookie("token", token, { expires: new Date(Date.now() + 900000), httpOnly: true }) // send the token as cookies to client
+            res.redirect("/patient-home") //reriect to the admin-home page
+        })
+        res.redirect("/patient-home") //send homepage if valid username and password
+    } catch (error) {
+        console.log(error)
+    }
 })
+//.............................................................................
 
-router.get('/admin-home', function(req,res){
+router.post("/login-admin", async (req, res) => {
+    const username = req.body.username
+    const password = req.body.password
+
+    try {
+        const admin = await Admin.findOne({ username }).exec()
+        if (!admin) {
+            res.redirect("/")              //Check usernam
+        }
+        admin.comparePassword(password, (error, match) => {
+            if (!match) {               //check password
+                res.redirect("/")
+            }
+        })
+        // if valid credentials assigning user a token and send it to the user
+        jwt.sign({ user: admin }, "secretkey", (err, token) => { // sign the token 
+            res.cookie("token", token, { expires: new Date(Date.now() + 900000), httpOnly: true }) // send the token as cookies to client
+            res.redirect("/admin-home") //reriect to the admin-home page
+        })
+    } catch (error) {
+        console.log(error)
+    }
+})
+//---------------------------------------------------------------------------Home-Pages----------------------------------
+router.get('/admin-home',verifyToken, function(req,res){
+	jwt.verify(req.token, "secretkey", {expiresIn:"30s"},(err,authData)=>{
+		if (err) {
+			res.sendStatus(403)
+		}else {
+			res.sendFile(__dirname + "/views/homepage.html")
+	}	
+})
     
 })
-
-router.get('/doctor-home', function(req,res){
-    
+//............................................................................
+router.get('/doctor-home',verifyToken, function(req,res){
+    jwt.verify(req.token, "secretkey", { expiresIn: "30s" }, (err, authData) => {
+		if (err) {
+			res.sendStatus(403)
+		} else {
+			res.sendFile(__dirname + "/views/homepage.html") // sending users patient Home page
+		}
+	})
 })
-
-router.get('/patient-home', function(req,res){
-    
+//............................................................................
+router.get('/patient-home',verifyToken, function(req,res){
+    jwt.verify(req.token, "secretkey", { expiresIn: "30s" }, (err, authData) => {
+		if (err) {
+			res.sendStatus(403)
+		} else {
+			res.sendFile(__dirname + "/views/homepage.html") // sending users patient Home page
+		}
+	})
 })
 
 /* ======================================================= */
@@ -166,7 +260,22 @@ router.post('/add-admin', function(req, res){
         })
         .catch((err)=> console.log(err))
 })
+//format of token
+function verifyToken(req,res, next){
+	//get auth header value
+	const cookies = req.cookies['token']
+	//check if token is a string
+	if (typeof(cookies) == "string") {
+		const Token = cookies
+		req.token = Token
+		//Next middleware
+		next()
 
+	}else{
+		//forbidden
+		res.sendStatus(403)
+	}
+}
 /* ============================================================= */
 ///////////////////////////////////////////////////////////////////
 
