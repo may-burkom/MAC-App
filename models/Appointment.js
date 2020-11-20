@@ -31,8 +31,9 @@ const AppointmentSchema = mongoose.Schema({
     Reasons:{
         type:String,
         required:true
+    }
 })
 
 const AppointmentModel = mongoose.model('appointment',AppointmentSchema)
 
-module.exports = userModel
+module.exports = AppointmentModel
