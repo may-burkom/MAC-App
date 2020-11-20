@@ -23,6 +23,10 @@ router.get('/', function(req, res){
     res.redirect("/main-home")
 })
 //--------------------------------------------------------------------------------------Users Login Route-----------------
+router.post("/logout", function(req,res)=>{
+    res.clearCookie('token') // clear token
+    res.redirect("/main-home") // go back to main-home page
+})
 router.post("/login-doctor", async (req, res) => {
     const username = req.body.username
     const password = req.body.password
@@ -129,7 +133,22 @@ router.get('/patient-home',verifyToken, function(req,res){
 		}
 	})
 })
+//format of token
+function verifyToken(req,res, next){
+    //get auth header value
+    const cookies = req.cookies['token']
+    //check if token is a string
+    if (typeof(cookies) == "string") {
+        const Token = cookies
+        req.token = Token
+        //Next middleware
+        next()
 
+    }else{
+        //forbidden
+        res.sendStatus(403)
+    }
+}
 /* ======================================================= */
 
 /* ===================== REST API  ========================*/
@@ -260,22 +279,7 @@ router.post('/add-admin', function(req, res){
         })
         .catch((err)=> console.log(err))
 })
-//format of token
-function verifyToken(req,res, next){
-	//get auth header value
-	const cookies = req.cookies['token']
-	//check if token is a string
-	if (typeof(cookies) == "string") {
-		const Token = cookies
-		req.token = Token
-		//Next middleware
-		next()
 
-	}else{
-		//forbidden
-		res.sendStatus(403)
-	}
-}
 /* ============================================================= */
 ///////////////////////////////////////////////////////////////////
 
