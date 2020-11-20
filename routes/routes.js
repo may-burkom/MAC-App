@@ -6,10 +6,10 @@ const bodyParser = require("body-parser")// packages to be installed
 const cookieParser = require("cookie-parser") //package to be installed
 
 const Appointment = require('./models/Appointment.js')
-const Patient = require('./models/Patient.js')
-const Doctor = require('./models/Doctor.js')
-const Admin = require('./models/Admin.js')
-const Consultation = require('./models/Consultation.js')
+const Patient = require('../models/Patient.js')
+const Doctor = require('../models/Doctor.js')
+const Admin = require('../models/Admin.js')
+const Consultation = require('../models/Consultation.js')
 
 //////////////////// ROUTES //////////////////////////////
 
@@ -21,6 +21,10 @@ app.use(cookieParser());
 router.get('/', function(req, res){
     //root route is for the main home
     res.redirect("/main-home")
+})
+router.get('/main-home', function(req, res){
+    //root route is for the main home
+    res.sendFile(__dirname + "./")
 })
 //--------------------------------------------------------------------------------------Users Login Route-----------------
 router.post("/logout", function(req,res)=>{
