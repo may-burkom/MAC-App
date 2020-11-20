@@ -27,7 +27,7 @@ router.get('/main-home', function(req, res){
     res.sendFile(__dirname + "./")
 })
 //--------------------------------------------------------------------------------------Users Login Route-----------------
-router.post("/logout", function(req,res)=>{
+router.post("/logout", function(req,res){
     res.clearCookie('token') // clear token
     res.redirect("/main-home") // go back to main-home page
 })
