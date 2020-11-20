@@ -1,11 +1,12 @@
 const express = require('express')
+const app = express()
 const router = express.Router()
 
 const jwt = require("jsonwebtoken") // package to be installed
 const bodyParser = require("body-parser")// packages to be installed
 const cookieParser = require("cookie-parser") //package to be installed
 
-const Appointment = require('./models/Appointment.js')
+const Appointment = require('../models/Appointment.js')
 const Patient = require('../models/Patient.js')
 const Doctor = require('../models/Doctor.js')
 const Admin = require('../models/Admin.js')
