@@ -1,14 +1,17 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require("body-parser")
+const multer = require('multer')
 // const router = express.Router()
 
 const routes = require('./routes/routes')
 
 const app = express()
+const upload = multer()
 
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.json())
+app.use(upload.array())
 
 ////////////////// Mongo DB //////////////////////////////////
 mongoose.connect('mongodb+srv://user_grp:switchMaven980@smbootcamp2020.dw1al.gcp.mongodb.net/mac-app-db?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true}, 
