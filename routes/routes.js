@@ -129,11 +129,14 @@ router.get('/doctor-home',verifyToken, function(req,res){
 	})
 })
 //............................................................................
-router.get('/patient-home',verifyToken, function(req,res){
+router.get('/patient-home',verifyToken, async function(req,res){
+
     jwt.verify(req.token, "secretkey", { expiresIn: "30s" }, (err, authData) => {
 		if (err) {
 			res.sendStatus(403)
 		} else {
+
+            
 			res.sendFile(__dirname + "/views/homepage.html") // sending users patient Home page
 		}
 	})
