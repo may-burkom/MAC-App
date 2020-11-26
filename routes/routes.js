@@ -135,9 +135,15 @@ router.get('/patient-home',verifyToken, async function(req,res){
 		if (err) {
 			res.sendStatus(403)
 		} else {
-
             
-			res.sendFile(__dirname + "/views/homepage.html") // sending users patient Home page
+            try {
+
+                //--------Get all the doctors -------------------
+                const doctors = await Doctor.find({})
+                res.sendFile(__dirname + "/views/homepage.html") // sending users patient Home page
+            } catch(err) {
+                res.json({message: err})
+            }
 		}
 	})
 })

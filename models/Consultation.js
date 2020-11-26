@@ -11,10 +11,10 @@ const consultationtSchema = new mongoose.Schema({
 	appointmentDate: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true},
 
 	// Reference patient name  from patient model
-	patientName: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true},
+	patient: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true},
 
 	// Reference doctor name from doctor model
-	doctorName: {type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', required: true},
+	doctor: {type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', required: true},
 
 })
 
