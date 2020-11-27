@@ -64,7 +64,7 @@ router.post("/login-patient", async (req, res) => {
         const patient = await Patient.findOne({ username }).exec()
         if (!patient) {
             console.log("no patient")
-            res.redirect("/")              //Check usernam
+            res.redirect("/")              //Check username
         }
         patient.comparePassword(password, (error, match) => {
             if (!match) {               //check password
@@ -178,14 +178,18 @@ router.post('/add-appointment', function(req, res){
 })
 
 //for the doctors
-router.get('get-appointments', function(req, res){
-
+router.get('/get-appointments', function(req, res){
+    // request doctor's mongo obj ID
+    // Doctor.find({})
+    //     .then(function(docObj){
+            
+    //     })
 })
 
 router.post('/add-consultation', function(req, res){
     console.log(req.body)
     let newConsultation = new Consultation({
-        consultSummary: req.body.consultSummary,
+        consultationSummary: req.body.consultSummary,
         attachedFile: req.body.consultAttachedFile
     })
     newConsultation.save()
@@ -202,10 +206,10 @@ router.post('/add-patient', function(req, res){
         patientCode: req.body.patCode,
         firstName: req.body.patName,
         lastName: req.body.patSurname,
-        username: req.body.patUsername,
+        username: req.body.patUserName,
         password: req.body.patPassword,
         gender: req.body.patGender,
-        dob: req.body.patDob,
+        dob: req.body.patDoB,
         height: req.body.patHeight,
         weight: req.body.patWeight,
         mobilePhone: req.body.patMobilePhone,
@@ -230,10 +234,9 @@ router.post('/add-doctor', function(req, res){
         username: req.body.docUsername,
         password: req.body.docPassword,
         gender: req.body.docGender,
-        dob: req.body.docDob,
-        docEmail: req.body.docEmail,
-        medicalLicense: req.body.docLicenceType,
-        docSpeciality: req.body.docSpeciality
+        dob: req.body.docDoB,
+        email: req.body.docEmail,
+        specializedField: req.body.docSpeciality
     })
     newDoctor.save()
         .then(function(savedDoctor){
@@ -250,7 +253,7 @@ router.post('/add-admin', function(req, res){
         username: req.body.admUsername,
         password: req.body.admPassword,
         gender: req.body.admGender,
-        dob: req.body.admDob,
+        dob: req.body.admDoB,
         position: req.body.admPosition,
         height: req.body.admHeight,
         weight: req.body.admWeight,

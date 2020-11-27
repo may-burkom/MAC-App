@@ -5,7 +5,6 @@ const mongoose = require('mongoose')
 // Patient schema
 const PatientSchema = new mongoose.Schema({
 	
-	patientCode: {type: String, required: true},
 	firstName: {type: String, required: true},
 	lastName: {type: String, required: true},
 	username: {type: String, required: true},
