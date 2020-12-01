@@ -33,10 +33,11 @@ router.post("/logout", function(req,res){
     res.redirect("/main-home") // go back to main-home page
 })
 router.post("/login-doctor", async (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+    const username = req.body.docUsername
+    console.log(username)
+    const password = req.body.docPassword
     try {
-        const doctor = await Doctor.findOne({ username }).exec()
+        const doctor = await Doctor.findOne({ username: username }).exec()
         console.log(doctor)
         if (!doctor) {
             res.redirect("/")              //Check username
@@ -47,9 +48,12 @@ router.post("/login-doctor", async (req, res) => {
             }
         })
         // if valid credentials assigning user a token and send it to the user
+        console.log('usrnm & pswrd was a match!')
         jwt.sign({ user: doctor }, "secretkey", (err, token) => {
+            console.log(`Token: ${token}`)
             res.cookie("token", token, { expires: new Date(Date.now() + 900000), httpOnly: true }) // send the token as cookies to client
-            res.redirect("/doctor-home") //reriect to the admin-home page
+            console.log('foofa')
+            res.redirect("/doctor-home") //reriect to the doctor-home page
         })
         res.redirect("/doctor-home") //send homepage if valid username and password
     } catch (error) {
@@ -58,8 +62,8 @@ router.post("/login-doctor", async (req, res) => {
 })
 //............................................................................
 router.post("/login-patient", async (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+    const username = req.body.patUsername
+    const password = req.body.patPassword
     try {
         const patient = await Patient.findOne({ username }).exec()
         if (!patient) {
@@ -85,8 +89,8 @@ router.post("/login-patient", async (req, res) => {
 //.............................................................................
 
 router.post("/login-admin", async (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+    const username = req.body.admUsername
+    const password = req.body.admPassword
 
     try {
         const admin = await Admin.findOne({ username }).exec()
@@ -120,6 +124,7 @@ router.get('/admin-home',verifyToken, function(req,res){
 })
 //............................................................................
 router.get('/doctor-home',verifyToken, function(req,res){
+    console.log("par-tay")
     jwt.verify(req.token, "secretkey", { expiresIn: "30s" }, (err, authData) => {
 		if (err) {
 			res.sendStatus(403)
@@ -139,8 +144,10 @@ router.get('/patient-home',verifyToken, function(req,res){
 	})
 })
 //format of token
-function verifyToken(req,res, next){
+function verifyToken(req, res, next){
     //get auth header value
+    // console.log(Object.keys(req))
+    console.log(req.headers)
     const cookies = req.cookies['token']
     //check if token is a string
     if (typeof(cookies) == "string") {
@@ -161,6 +168,17 @@ function verifyToken(req,res, next){
 //for the patients
 router.get('get-consultations', function(req, res){
 
+})
+
+//get pateints data and send to frontend
+router.get('/patient-details/:id', function(req, res){
+    console.log(req.params.id)
+    Patient.findById({_id: req.params.id})
+        .then(function(patientUser){
+            console.log(patientUser)
+            res.send(patientUser)
+        })
+        .catch((err)=>{console.log(err)})
 })
 
 router.post('/add-appointment', function(req, res){
@@ -184,6 +202,17 @@ router.get('/get-appointments', function(req, res){
     //     .then(function(docObj){
             
     //     })
+})
+
+//get doctor data and send to frontend
+router.get('/doc-details/:id', function(req, res){
+    console.log(req.params.id)
+    Doctor.findById({_id: req.params.id})
+        .then(function(docUser){
+            console.log(docUser)
+            res.send(docUser)
+        })
+        .catch((err)=>{console.log(err)})
 })
 
 router.post('/add-consultation', function(req, res){
@@ -222,6 +251,7 @@ router.post('/add-patient', function(req, res){
     newPatient.save()
         .then(function(savedPatient){
             console.log(savedPatient)
+            res.send(savedPatient)
         })
         .catch((err)=> console.log(err))
 })
@@ -241,6 +271,7 @@ router.post('/add-doctor', function(req, res){
     newDoctor.save()
         .then(function(savedDoctor){
             console.log(savedDoctor)
+            res.send(savedDoctor)
         })
         .catch((err)=> console.log(err))
 })
@@ -267,6 +298,7 @@ router.post('/add-admin', function(req, res){
     newAdmin.save()
         .then(function(savedAdmin){
             console.log(savedAdmin)
+            res.send(savedAdmin)
         })
         .catch((err)=> console.log(err))
 })
